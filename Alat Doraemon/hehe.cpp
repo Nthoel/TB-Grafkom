@@ -1,12 +1,17 @@
 #include <GL/glut.h>
 #include <math.h>
 
+// Variables for the first window (hehe.cpp)
 float tx = 0.0f, ty = 0.0f, tz = 0.0f;    // Translasi
 float rx = 0.0f, ry = 0.0f, rz = 0.0f;    // Rotasi
 float sx = 1.0f, sy = 1.0f, sz = 1.0f;    // Skala
 bool showAxis = true;                      // Toggle sumbu
 
-void init() {
+// Variables for the second window (bambu.cpp)
+float angle = 0.0f;
+float speed = 3.0f;
+
+void initHehe() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glEnable(GL_DEPTH_TEST);
     
@@ -47,7 +52,7 @@ void drawAxes() {
     glEnable(GL_LIGHTING);
 }
 
-void display() {
+void displayHehe() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     glLoadIdentity();
@@ -74,7 +79,7 @@ void display() {
     glutSwapBuffers();
 }
 
-void reshape(int w, int h) {
+void reshapeHehe(int w, int h) {
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -112,18 +117,125 @@ void keyboard(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+void initBambu() {
+    glClearColor(0.0, 0.0, 0.0, 0.0); // Set background color to white
+    glEnable(GL_DEPTH_TEST); // Enable depth testing
+}
+
+void reshapeBambu(int w, int h) {
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (double)w / (double)h, 1.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void drawAxesBambu() {
+    glLineWidth(2.0f);
+    glBegin(GL_LINES);
+
+    // X-axis (red)
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-10.0f, 0.0f, 0.0f);
+    glVertex3f(10.0f, 0.0f, 0.0f);
+
+    // Y-axis (green)
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -10.0f, 0.0f);
+    glVertex3f(0.0f, 10.0f, 0.0f);
+
+    // Z-axis (blue)
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -10.0f);
+    glVertex3f(0.0f, 0.0f, 10.0f);
+
+    glEnd();
+}
+
+void drawPropeller() {
+    // Draw the rotating propeller
+    glPushMatrix();
+    glRotatef(angle, 0.0f, 1.0f, 0.0f); // Rotate around Y-axis
+
+    // Draw the blade
+    glPushMatrix();
+    glScalef(7.0f, 0.2f, 0.5f);
+    glColor3f(1.0f, 0.8f, 0.0f);
+    glutSolidCube(1.0f);
+    glPopMatrix();
+
+    glPopMatrix();
+
+    // Draw the central hub
+    glColor3f(1.0f, 0.7f, 0.0f);
+    glutSolidSphere(0.5f, 20, 20);
+}
+
+void drawStand() {
+    // Draw the vertical pole
+    glPushMatrix();
+    glColor3f(1.0f, 0.8f, 0.0f);
+    glScalef(0.2f, 5.0f, 0.2f);
+    glutSolidCube(1.0f);
+    glPopMatrix();
+
+    // Draw the base
+    glPushMatrix();
+    glColor3f(1.0f, 0.7f, 0.0f);
+    glTranslatef(0.0f, -2.5f, 0.0f);
+    glutSolidSphere(0.8f, 20, 20);
+    glPopMatrix();
+}
+
+void displayBambu() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    gluLookAt(10.0, 10.0, 17.0,
+              0.0, 0.0, 0.0,
+              0.0, 1.0, 0.0);
+
+    // Draw the coordinate axes
+    drawAxesBambu();
+
+    // Draw the stand
+    drawStand();
+
+    // Move the propeller to the top of the stand
+    glPushMatrix();
+    glTranslatef(0.0f, 2.5f, 0.0f);
+    drawPropeller();
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
+void idleBambu() {
+    angle += speed;
+    if (angle > 360.0f) angle -= 360.0f;
+    glutPostRedisplay();
+}
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+
+    // Create the first window (hehe.cpp)
     glutInitWindowSize(800, 600);
-    glutCreateWindow("SolidTorus dengan Transformasi");
-    
-    init();
-    
-    glutDisplayFunc(display);
-    glutReshapeFunc(reshape);
+    int window1 = glutCreateWindow("SolidTorus dengan Transformasi");
+    initHehe();
+    glutDisplayFunc(displayHehe);
+    glutReshapeFunc(reshapeHehe);
     glutKeyboardFunc(keyboard);
-    
+
+    // Create the second window (bambu.cpp)
+    glutInitWindowSize(800, 600);
+    int window2 = glutCreateWindow("Baling baling bambu");
+    initBambu();
+    glutDisplayFunc(displayBambu);
+    glutReshapeFunc(reshapeBambu);
+    glutIdleFunc(idleBambu);
+
     glutMainLoop();
     return 0;
 }
