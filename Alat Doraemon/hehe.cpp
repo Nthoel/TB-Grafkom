@@ -1,4 +1,7 @@
+#include <GL/glew.h>
 #include <GL/glut.h>
+#include <FreeImage.h>
+#include <stdio.h>
 #include <math.h>
 
 // Variables for the first window (hehe.cpp)
@@ -10,6 +13,8 @@ bool showAxis = true;                      // Toggle sumbu
 // Variables for the second window (bambu.cpp)
 float angle = 0.0f;
 float speed = 3.0f;
+
+GLuint texture_Earth_ID;
 
 void initHehe() {
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -134,20 +139,26 @@ void drawAxesBambu() {
     glLineWidth(2.0f);
     glBegin(GL_LINES);
 
+    glPushMatrix();
     // X-axis (red)
     glColor3f(1.0f, 0.0f, 0.0f);
     glVertex3f(-10.0f, 0.0f, 0.0f);
     glVertex3f(10.0f, 0.0f, 0.0f);
+    glPopMatrix();
 
+    glPushMatrix();
     // Y-axis (green)
     glColor3f(0.0f, 1.0f, 0.0f);
     glVertex3f(0.0f, -10.0f, 0.0f);
     glVertex3f(0.0f, 10.0f, 0.0f);
+    glPopMatrix();
 
+    glPushMatrix();
     // Z-axis (blue)
     glColor3f(0.0f, 0.0f, 1.0f);
     glVertex3f(0.0f, 0.0f, -10.0f);
     glVertex3f(0.0f, 0.0f, 10.0f);
+    glPopMatrix();
 
     glEnd();
 }
@@ -216,13 +227,147 @@ void idleBambu() {
     glutPostRedisplay();
 }
 
+void createObject() {
+    GLUquadric* object = gluNewQuadric();
+    gluQuadricTexture(object, GL_TRUE);
+    gluQuadricNormals(object, GLU_SMOOTH);
+    
+    float panjang = 3.0f;  // Sesuaikan dengan ukuran yang diinginkan
+    float lebar = 2.0f;    // Sesuaikan dengan ukuran yang diinginkan
+    float tinggi = 0.5f;   // Sesuaikan dengan ukuran yang diinginkan
+
+
+    glBegin(GL_QUADS);
+    // Sisi depan
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-panjang, -tinggi, lebar);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(panjang, -tinggi, lebar);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(panjang, tinggi, lebar);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-panjang, tinggi, lebar);
+    
+    // Sisi belakang
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-panjang, -tinggi, -lebar);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-panjang, tinggi, -lebar);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(panjang, tinggi, -lebar);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(panjang, -tinggi, -lebar);
+    
+    // Sisi atas
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-panjang, tinggi, -lebar);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-panjang, tinggi, lebar);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(panjang, tinggi, lebar);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(panjang, tinggi, -lebar);
+    
+    // Sisi bawah
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-panjang, -tinggi, -lebar);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(panjang, -tinggi, -lebar);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(panjang, -tinggi, lebar);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-panjang, -tinggi, lebar);
+    
+    // Sisi kanan
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(panjang, -tinggi, -lebar);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(panjang, tinggi, -lebar);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(panjang, tinggi, lebar);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(panjang, -tinggi, lebar);
+    
+    // Sisi kiri
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-panjang, -tinggi, -lebar);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(-panjang, -tinggi, lebar);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(-panjang, tinggi, lebar);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(-panjang, tinggi, -lebar);
+    glEnd();
+}
+
+void displayintro(){
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPushMatrix();
+    glRotatef(0,0,0,0);
+    
+ 
+    //BIND TExture ke Object di bawahnya, dengan ID yang sudah di simpan 
+    //tadi
+    glBindTexture( GL_TEXTURE_2D, texture_Earth_ID);
+    createObject();
+ 
+ 
+    glPopMatrix();
+    glutSwapBuffers();
+    glutPostRedisplay();
+}
+
+    GLuint textureID = 0;
+
+int loadTexture(const char* path) {
+    //untuk menyimpan Data Texture di ID spesifik!
+    glGenTextures(1, &textureID);
+    //kode di bawah untuk Memproses Pembacaan/Penyimpanan Buffer dari 
+    //Gambar
+    void* imgData;
+    int imgWidth;
+    int imgHeight;
+    FREE_IMAGE_FORMAT format = FreeImage_GetFIFFromFilename(path);
+    if (format == FIF_UNKNOWN) {
+    printf("Unknown file type for texture image file %s\n", path);
+    return -1;
+ }
+    FIBITMAP* bitmap = FreeImage_Load(format, path, 0);
+    if (!bitmap) {
+    printf("Failed to load image %s\n", path);
+    return -1;
+ }
+    FIBITMAP* bitmap2 = FreeImage_ConvertTo24Bits(bitmap);
+    FreeImage_Unload(bitmap);
+    imgData = FreeImage_GetBits(bitmap2);
+    imgWidth = FreeImage_GetWidth(bitmap2);
+    imgHeight = FreeImage_GetHeight(bitmap2);
+    if (imgData) {
+    printf("Texture image loaded from file %s, size %dx%d\n", path,
+    imgWidth, imgHeight);
+    int format;
+    if ( FI_RGBA_RED == 0 )
+    format = GL_RGB;
+    else
+    format = GL_BGR;
+    glBindTexture( GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0,
+    format,GL_UNSIGNED_BYTE, imgData);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    textureID++;
+    return textureID-1;
+ }
+    else {
+        printf("Failed to get texture data from %s\n", path);
+ }
+ return -1;
+}
+
+void initProjection(){
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_POLYGON_SMOOTH);
+    glShadeModel(GL_SMOOTH);
+    //untuk meaktifkan texture di Polygon
+    glEnable(GL_TEXTURE_2D);
+    //untuk Mengubah matrik menjadi texture Rendering di OpenGL
+    glMatrixMode(GL_TEXTURE);
+    //END
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0,1800/900,1.0,100.0);
+    gluLookAt(10.0, 10.0, 10.0,
+            0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0);
+    glMatrixMode(GL_MODELVIEW);
+    texture_Earth_ID = loadTexture("textures/konnyaku2.png");
+    //texture_bulan_ID = loadTexture("textures/bulan.png");
+}
+
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
+    glewInit();
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-    // Create the first window (hehe.cpp)
+    // Create the second window (hehe.cpp)
     glutInitWindowSize(800, 600);
-    int window1 = glutCreateWindow("SolidTorus dengan Transformasi");
+    int window1 = glutCreateWindow("Lingkaran Penembus Dinding");
     initHehe();
     glutDisplayFunc(displayHehe);
     glutReshapeFunc(reshapeHehe);
@@ -235,6 +380,12 @@ int main(int argc, char** argv) {
     glutDisplayFunc(displayBambu);
     glutReshapeFunc(reshapeBambu);
     glutIdleFunc(idleBambu);
+
+    // Create the second window (hehe.cpp)
+    glutInitWindowSize(800, 600);
+    int window3 = glutCreateWindow("Konnyaku");
+    initProjection();
+    glutDisplayFunc(displayintro);
 
     glutMainLoop();
     return 0;
