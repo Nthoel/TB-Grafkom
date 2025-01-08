@@ -9,6 +9,8 @@ float tx = 0.0f, ty = 0.0f, tz = 0.0f;    // Translasi
 float rx = 0.0f, ry = 0.0f, rz = 0.0f;    // Rotasi
 float sx = 1.0f, sy = 1.0f, sz = 1.0f;    // Skala
 bool showAxis = true;                      // Toggle sumbu
+bool isRotate = true;
+bool is2DMode = false;
 
 // Variables for the second window (bambu.cpp)
 float angle = 0.0f;
@@ -276,7 +278,7 @@ void createObject() {
     glEnd();
 }
 
-void displayintro(){
+void displayKonnyaku(){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
     glRotatef(0,0,0,0);
@@ -359,6 +361,49 @@ void initProjection(){
     //texture_bulan_ID = loadTexture("textures/bulan.png");
 }
 
+void processMenu(int option)
+{
+    switch (option)
+    {
+    case 1:
+        is2DMode = false;
+        initBambu();
+        break;
+    case 2:
+        is2DMode = true;
+        break;
+    case 3:
+        isRotate = !isRotate;
+        break;
+    case 4:
+        exit(0);
+    }
+    glutPostRedisplay();
+}
+
+void createMenu()
+{
+    glutCreateMenu(processMenu);
+    glutAddMenuEntry("Baling-baling Bambu", 1);
+    glutAddMenuEntry("Object 2D", 2);
+    glutAddMenuEntry("Berhenti Bergerak", 3);
+    glutAddMenuEntry("Keluar", 4);
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
+void update(int value)
+{
+    if (!is2DMode)
+    {
+        if (isRotate)
+        {
+            angle += speed;
+            if (angle > 360.0f) angle -= 360.0f;
+        }
+        glutPostRedisplay();
+    }
+    glutTimerFunc(1000/60, update, 0);
+}
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -380,12 +425,13 @@ int main(int argc, char** argv) {
     glutDisplayFunc(displayBambu);
     glutReshapeFunc(reshapeBambu);
     glutIdleFunc(idleBambu);
+    createMenu();
 
     // Create the second window (hehe.cpp)
     glutInitWindowSize(800, 600);
     int window3 = glutCreateWindow("Konnyaku");
     initProjection();
-    glutDisplayFunc(displayintro);
+    glutDisplayFunc(displayKonnyaku);
 
     glutMainLoop();
     return 0;
