@@ -30,7 +30,7 @@ float speed = 3.0f;        // Mengatur kecepatan rotasi baling-baling
 
 //---------------------------------------------------------Fathul---------------------------------------------------------//
 void initHehe() { // Fungsi inisialisasi 
-    glClearColor(0.0, 0.0, 0.0, 1.0); // Mengatur warna background menjadi hitam
+    glClearColor(0.0, 0.682, 0.937, 1.0); // Mengatur warna background menjadi biru
     glEnable(GL_DEPTH_TEST); // Mengaktifkan depth testing
     
     // Aktifkan pencahayaan
@@ -53,6 +53,7 @@ void drawAxes() {
     if (!showAxis) return; // Jika showAxis bernilai false, maka keluar dari fungsi
     
     glDisable(GL_LIGHTING); // Menonaktifkan pencahayaan
+    glLineWidth(2.0); // Menentukan ketebalan garis sumbu
     glBegin(GL_LINES); // Menggambar sumbu koordinat
     // X-axis (merah)
     glColor3f(1.0, 0.0, 0.0);
@@ -188,7 +189,7 @@ void keyboard3(unsigned char key, int x, int y) {
 
 //inisialisasi
 void initBambu() {
-    glClearColor(0.0, 0.0, 0.0, 0.0); //Latar belakang hitam
+    glClearColor(0.0, 0.682, 0.937, 1.0); // Mengatur warna background menjadi biru
     glEnable(GL_DEPTH_TEST); //Aktifkan depth test biar objek 3D tdk saling tembus
 }
 
@@ -437,6 +438,7 @@ int loadTexture(const char* path) {
 }
 
 void initProjection(){
+    glClearColor(0.0, 0.682, 0.937, 1.0); // Mengatur warna background menjadi biru
     glEnable(GL_DEPTH_TEST); // Mengaktifkan pengujian kedalaman untuk 3D
     glEnable(GL_POLYGON_SMOOTH); // Menghaluskan tepi poligon
     glShadeModel(GL_SMOOTH);
