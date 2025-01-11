@@ -20,11 +20,11 @@ GLuint texture_Earth_ID;
 //------------------------------------------------------------------------------------------------------------------------//
 
 //---------------------------------------------------------Wilyandi-------------------------------------------------------//
-bool showAxis3 = true;     // Untuk menampilkan sumbu koordinat
-bool isRotate = false;     // rotasi baling-baling
-bool is2DMode = false;     // 2D
-float angle = 0.0f;        // Sudut rotasi baling-baling
-float speed = 3.0f;        // Kecepatan rotasi
+bool showAxis3 = true;     // Menentukan apakah sumbu koordinat akan ditampilkan
+bool isRotate = false;     // Menandakan apakah baling-baling sedang berputar
+bool is2DMode = false;     // Menentukan apakah mode tampilan adalah 2D
+float angle = 0.0f;        // sudut rotasi baling-baling
+float speed = 3.0f;        // Mengatur kecepatan rotasi baling-baling
 //------------------------------------------------------------------------------------------------------------------------//
 
 
@@ -175,6 +175,7 @@ void keyboard2(unsigned char key, int x, int y) {
 //------------------------------------------------------------------------------------------------------------------------//
 
 //---------------------------------------------------------Wilyandi-------------------------------------------------------//
+//fungsi keyboard
 void keyboard3(unsigned char key, int x, int y) {
     switch(key) {
         // Toggle sumbu
@@ -185,114 +186,137 @@ void keyboard3(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+//inisialisasi
 void initBambu() {
-    glClearColor(0.0, 0.0, 0.0, 0.0); // Set background color to white
-    glEnable(GL_DEPTH_TEST); // Enable depth testing
+    glClearColor(0.0, 0.0, 0.0, 0.0); //Latar belakang hitam
+    glEnable(GL_DEPTH_TEST); //Aktifkan depth test biar objek 3D tdk saling tembus
 }
 
+// Kalau ukuran jendela berubah,sesuaikan perspektifnya
 void reshapeBambu(int w, int h) {
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0, (double)w / (double)h, 1.0, 100.0);
-    glMatrixMode(GL_MODELVIEW);
+    glViewport(0, 0, w, h); //set area gambar
+    glMatrixMode(GL_PROJECTION); //ganti ke mode proyeksi untuk atur perspektif
+    glLoadIdentity();  //Reset transformasi sebelumnya
+    gluPerspective(45.0, (double)w / (double)h, 1.0, 100.0);  //Perspektif kamera
+    glMatrixMode(GL_MODELVIEW); //Kembali ke mode gambar objek
 }
 
+//gambar kartesius
 void drawAxesBambu() {
-    if (!showAxis3) return;
-    glLineWidth(2.0f);
-    glBegin(GL_LINES);
+    if (!showAxis3) return; // Jika showAxis3 bernilai false, maka keluar dari fungsi
+    glLineWidth(2.0f); // Menentukan ketebalan garis sumbu
+    glBegin(GL_LINES);  // Mulai menggambar garis
 
-    glPushMatrix();
-    // X-axis (red)
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-10.0f, 0.0f, 0.0f);
-    glVertex3f(10.0f, 0.0f, 0.0f);
-    glPopMatrix();
+    // Sumbu X (merah)
+    glColor3f(1.0f, 0.0f, 0.0f); //warna merah
+    glVertex3f(-10.0f, 0.0f, 0.0f); //titik awal
+    glVertex3f(10.0f, 0.0f, 0.0f); //titik akhir
 
-    glPushMatrix();
-    // Y-axis (green)
+    // Sumbu Y (hijau)
     glColor3f(0.0f, 1.0f, 0.0f);
     glVertex3f(0.0f, -10.0f, 0.0f);
     glVertex3f(0.0f, 10.0f, 0.0f);
-    glPopMatrix();
 
-    glPushMatrix();
-    // Z-axis (blue)
+    // Sumbu Z (biru)
     glColor3f(0.0f, 0.0f, 1.0f);
     glVertex3f(0.0f, 0.0f, -10.0f);
     glVertex3f(0.0f, 0.0f, 10.0f);
-    glPopMatrix();
 
     glEnd();
 }
 
+// Gambar baling-baling
 void drawPropeller() {
-    // Draw the rotating propeller
+    glPushMatrix();  //Menyimpan keadaan matriks saat ini
+    glRotatef(angle, 0.0f, 1.0f, 0.0f); //Putar baling-baling di sumbu Y
+
+    //Baling-baling
     glPushMatrix();
-    glRotatef(angle, 0.0f, 1.0f, 0.0f); // Rotate around Y-axis
+    glScalef(7.0f, 0.2f, 0.5f); //ukuran baling baling
+    glColor3f(1.0f, 0.8f, 0.0f); //mengatur warna baling baling
+    glutSolidCube(1.0f); //bentuk baling baling berupa cube
+    glPopMatrix();  // Mengembalikan keadaan matriks ke sebelumnya
 
-    // Draw the blade
-    glPushMatrix();
-    glScalef(7.0f, 0.2f, 0.5f);
-    glColor3f(1.0f, 0.8f, 0.0f);
-    glutSolidCube(1.0f);
-    glPopMatrix();
+    glPopMatrix();  // Mengembalikan keadaan matriks ke sebelumnya
 
-    glPopMatrix();
-
-    // Draw the central hub
-    glColor3f(1.0f, 0.7f, 0.0f);
-    glutSolidSphere(0.5f, 20, 20);
+    //poros baling baling
+    glColor3f(1.0f, 0.7f, 0.0f); //warna poros baling baling
+    glutSolidSphere(0.5f, 20, 20); //poros berbentuk bola
 }
 
+//Gambar tiang baling baling
 void drawStand() {
-    // Draw the vertical pole
+    //Tiang
     glPushMatrix();
-    glColor3f(1.0f, 0.8f, 0.0f);
-    glScalef(0.2f, 5.0f, 0.2f);
+    glColor3f(1.0f, 0.8f, 0.0f); //warna tiang
+    glScalef(0.2f, 5.0f, 0.2f); //bentuk tiang panjang
     glutSolidCube(1.0f);
     glPopMatrix();
 
-    // Draw the base
+    //dasar tiang
     glPushMatrix();
-    glColor3f(1.0f, 0.7f, 0.0f);
-    glTranslatef(0.0f, -2.5f, 0.0f);
-    glutSolidSphere(0.8f, 20, 20);
+    glColor3f(1.0f, 0.7f, 0.0f); //warna tiang
+    glTranslatef(0.0f, -2.5f, 0.0f); //posisi dasar
+    glutSolidSphere(0.8f, 20, 20); //dasar bentuk bola
     glPopMatrix();
 }
 
+//Fungsi utama untuk menggambar semua di window
 void displayBambu() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Bersihkan layar
+    glLoadIdentity();   //Menyetel ulang matriks transformasi
 
-    gluLookAt(10.0, 10.0, 17.0,
-              0.0, 0.0, 0.0,
-              0.0, 1.0, 0.0);
+    gluLookAt(10.0, 10.0, 17.0,        //posisi kamera
+              0.0, 0.0, 0.0,           //Fokus kamera
+              0.0, 1.0, 0.0);          //Arah atas kamera
 
-    // Draw the coordinate axes
-    drawAxesBambu();
+    drawAxesBambu();                   //Gambar kartesius
+    drawStand();                       //Gambar tiang penyangga
 
-    // Draw the stand
-    drawStand();
-
-    // Move the propeller to the top of the stand
+    //pindahkan baling baling di atas tiang
     glPushMatrix();
-    glTranslatef(0.0f, 2.5f, 0.0f);
-    drawPropeller();
+    glTranslatef(0.0f, 2.5f, 0.0f);    //Posisi baling baling
+    drawPropeller(); //memanggil objek baling baling bambu
     glPopMatrix();
 
-    glutSwapBuffers();
+    glutSwapBuffers();                 //Tampilkan ke layar
 }
 
-void idleBambu() {
-    if (isRotate) {
-        angle += speed;
-        if (angle > 360.0f) angle -= 360.0f;
+//fungsi untuk proses menu GUI
+void processMenu(int option) {
+    switch (option) {
+        case 1:
+            isRotate = true;	//Memutar baling baling
+            break;
+        case 2:
+            isRotate = false;	//berhenti berputar
+            break;
+        case 3:
+            exit(0);	//keluar dri program
+            break;
     }
     glutPostRedisplay();
 }
-//------------------------------------------------------------------------------------------------------------------------//
+
+//Buat menu klik kanan
+void createMenu() {
+    glutCreateMenu(processMenu);	//Hubungkan menu dengan fungsi processMenu
+    glutAddMenuEntry("Putar", 1);	//Tambah opsi "Putar"
+    glutAddMenuEntry("Berhenti", 2);	//Tambah opsi "Berhenti"
+    glutAddMenuEntry("Keluar", 3);	  //Tambah opsi "Keluar"
+    glutAttachMenu(GLUT_RIGHT_BUTTON); //Tampilkan menu saat klik kanan
+}
+
+
+//fungsi idle untuk mengatur rotasi baling baling
+void idleBambu() {
+    if (isRotate) {                    //Kalau isRotate true, putar baling baling
+        angle += speed;                //tambah sudut rotasi
+        if (angle > 360.0f) angle -= 360.0f; //kembali ke 0 kalau sudut lebih dari 360
+    }
+    glutPostRedisplay();
+}
+//---------------------------------------------------------------------------------------------------------------------//
 
 //---------------------------------------------------------Sautan---------------------------------------------------------//
 void createObject() {
@@ -433,33 +457,6 @@ void initProjection(){
 }
 //------------------------------------------------------------------------------------------------------------------------//
 
-//---------------------------------------------------------Wilyandi-------------------------------------------------------//
-//fungsi untuk proses menu GUI
-void processMenu(int option) {
-    switch (option) {
-        case 1:
-            isRotate = true;	//Memutar baling baling
-            break;
-        case 2:
-            isRotate = false;	//stop putar
-            break;
-        case 3:
-            exit(0);	//keluar dri program
-            break;
-    }
-    glutPostRedisplay();
-}
-//Buat menu klik kanan
-void createMenu() {
-    glutCreateMenu(processMenu);	//Hubungkan menu dengan fungsi processMenu
-    glutAddMenuEntry("Putar", 1);	//Tambah opsi "Putar"
-    glutAddMenuEntry("Berhenti", 2);	//Tambah opsi "Berhenti"
-    glutAddMenuEntry("Keluar", 3);	//Tambah opsi "Keluar"
-    glutAttachMenu(GLUT_RIGHT_BUTTON); //Tampilkan menu saat klik kanan
-}
-//------------------------------------------------------------------------------------------------------------------------//
-
-
 
 int main(int argc, char** argv) { // Fungsi utama
     glutInit(&argc, argv); // Menginisialisasi GLUT
@@ -477,26 +474,27 @@ int main(int argc, char** argv) { // Fungsi utama
 //------------------------------------------------------------------------------------------------------------------------//
 
 //---------------------------------------------------------Wilyandi-------------------------------------------------------//
-    glutInitWindowSize(400, 400);
-    glutInitWindowPosition(150, 200);
-    int window2 = glutCreateWindow("Baling baling bambu");
-    initBambu();
-    glutDisplayFunc(displayBambu);
-    glutReshapeFunc(reshapeBambu);
-    glutKeyboardFunc(keyboard3);
-    glutIdleFunc(idleBambu);
-    createMenu();
+	glutInitWindowSize(400, 400); // Mengatur ukuran jendela
+	glutInitWindowPosition(150, 200); // Mengatur posisi jendela
+	int window2 = glutCreateWindow("Baling baling bambu"); // Membuat jendela dengan judul "Baling baling bambu"
+	initBambu(); // Memanggil fungsi untuk inisialisasi pengaturan OpenGL
+	glutDisplayFunc(displayBambu); // Memanggil fungsi displayBambu
+	glutReshapeFunc(reshapeBambu); // memanggil fungsi reshapeBambu
+	glutKeyboardFunc(keyboard3); // memanggil fungsi keyboard
+	glutIdleFunc(idleBambu); // memanggil fungsi idlebambu
+	createMenu(); // Membuat menu klik kanan
 //------------------------------------------------------------------------------------------------------------------------//
 
 //---------------------------------------------------------Sautan---------------------------------------------------------//
-    glutInitWindowSize(400, 400);
-    glutInitWindowPosition(575, 200);
-    int window3 = glutCreateWindow("Konnyaku");
-    initProjection();
-    glutDisplayFunc(displayKonnyaku);
-    glutKeyboardFunc(keyboard2);
+	glutInitWindowSize(400, 400); // Mengatur ukuran jendela menjadi 400x400 piksel
+	glutInitWindowPosition(575, 200); // Mengatur posisi jendela di layar pada koordinat (575, 200)
+	int window3 = glutCreateWindow("Konnyaku"); // Membuat jendela dengan judul "Konnyaku"
+	initProjection(); // Memanggil fungsi untuk inisialisasi pengaturan proyeksi
+	glutDisplayFunc(displayKonnyaku); // Menetapkan fungsi displayKonnyaku untuk menggambar objek
+	glutKeyboardFunc(keyboard2); // Menetapkan fungsi keyboard2 untuk menangani input dari keyboard
 //------------------------------------------------------------------------------------------------------------------------//
 
-    glutMainLoop();
+	glutMainLoop(); //Memulai loop utama GLUT untuk menjalankan program OpenGL
+   
     return 0;
 }
