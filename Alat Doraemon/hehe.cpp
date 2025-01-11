@@ -1,48 +1,59 @@
-#include <GL/glew.h>
-#include <GL/glut.h>
-#include <FreeImage.h>
-#include <stdio.h>
-#include <math.h>
+#include <GL/glew.h> // Menggunakan GLEW untuk mengakses semua fungsi OpenGL di Windows 
+#include <GL/glut.h> // Menggunakan GLUT untuk membuat jendela dan menangani input
+#include <FreeImage.h> // Menggunakan FreeImage untuk memuat gambar
+#include <stdio.h> // Menggunakan stdio untuk fungsi printf
+#include <math.h> // Menggunakan math untuk fungsi matematika
 
-// Variables for the first window (hehe.cpp)
+//---------------------------------------------------------Fathul---------------------------------------------------------//
 float tx = 0.0f, ty = 0.0f, tz = 0.0f;    // Translasi
 float rx = 0.0f, ry = 0.0f, rz = 0.0f;    // Rotasi
 float sx = 1.0f, sy = 1.0f, sz = 1.0f;    // Skala
 bool showAxis = true;                      // Toggle sumbu
-bool isRotate = true;
-bool is2DMode = false;
+//------------------------------------------------------------------------------------------------------------------------//
 
-// Variables for the second window (bambu.cpp)
-float angle = 0.0f;
-float speed = 3.0f;
-
+//---------------------------------------------------------Sautan---------------------------------------------------------//
+float tx2 = 0.0f, ty2 = 0.0f, tz2 = 0.0f;    // Translasi 
+float rx2 = 0.0f, ry2 = 0.0f, rz2 = 0.0f;    // Rotasi
+float sx2 = 1.0f, sy2 = 1.0f, sz2 = 1.0f;    // Skala
+bool showAxis2 = true;                      // Untuk menampilkan sumbu koordinat
 GLuint texture_Earth_ID;
+//------------------------------------------------------------------------------------------------------------------------//
 
-void initHehe() {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glEnable(GL_DEPTH_TEST);
+//---------------------------------------------------------Wilyandi-------------------------------------------------------//
+bool showAxis3 = true;     // Untuk menampilkan sumbu koordinat
+bool isRotate = false;     // rotasi baling-baling
+bool is2DMode = false;     // 2D
+float angle = 0.0f;        // Sudut rotasi baling-baling
+float speed = 3.0f;        // Kecepatan rotasi
+//------------------------------------------------------------------------------------------------------------------------//
+
+
+//---------------------------------------------------------Fathul---------------------------------------------------------//
+void initHehe() { // Fungsi inisialisasi 
+    glClearColor(0.0, 0.0, 0.0, 1.0); // Mengatur warna background menjadi hitam
+    glEnable(GL_DEPTH_TEST); // Mengaktifkan depth testing
     
     // Aktifkan pencahayaan
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING); 
+    glEnable(GL_LIGHT0); 
     
     // Konfigurasi cahaya
-    GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
-    GLfloat light_ambient[] = {0.2, 0.2, 0.2, 1.0};
+    GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0}; 
+    GLfloat light_ambient[] = {0.2, 0.2, 0.2, 1.0}; 
     GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
     GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
     
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position); 
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular); 
 }
 
 void drawAxes() {
-    if (!showAxis) return;
+    if (!showAxis) return; // Jika showAxis bernilai false, maka keluar dari fungsi
     
-    glDisable(GL_LIGHTING);
-    glBegin(GL_LINES);
+    glDisable(GL_LIGHTING); // Menonaktifkan pencahayaan
+    glBegin(GL_LINES); // Menggambar sumbu koordinat
     // X-axis (merah)
     glColor3f(1.0, 0.0, 0.0);
     glVertex3f(-10.0, 0.0, 0.0);
@@ -56,48 +67,48 @@ void drawAxes() {
     glVertex3f(0.0, 0.0, -10.0);
     glVertex3f(0.0, 0.0, 10.0);
     glEnd();
-    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHTING); // Mengaktifkan pencahayaan kembali
 }
 
 void displayHehe() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Membersihkan buffer warna dan kedalaman 
     
-    glLoadIdentity();
-    gluLookAt(5.0, 5.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    glLoadIdentity(); // Memuat matriks identitas ke matriks modelview
+    gluLookAt(5.0, 5.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0); // Menempatkan kamera pada posisi (5, 5, 15) dan mengarahkan ke titik (0, 0, 0)
     
-    drawAxes();
+    drawAxes(); // Memanggil fungsi untuk menggambar sumbu koordinat
     
-    glPushMatrix();
+    glPushMatrix(); // Menyimpan matriks model saat ini ke dalam tumpukan
     // Transformasi
-    glTranslatef(tx, ty, tz);
-    glRotatef(rx, 1.0, 0.0, 0.0);
-    glRotatef(ry, 0.0, 1.0, 0.0);
-    glRotatef(rz, 0.0, 0.0, 1.0);
-    glScalef(sx, sy, sz);
+    glTranslatef(tx, ty, tz); 
+    glRotatef(rx, 1.0, 0.0, 0.0); 
+    glRotatef(ry, 0.0, 1.0, 0.0); 
+    glRotatef(rz, 0.0, 0.0, 1.0); 
+    glScalef(sx, sy, sz); 
     
     // Material untuk torus (kuning)
-    GLfloat yellow_material[] = {1.0, 1.0, 0.0, 1.0};
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, yellow_material);
+    GLfloat yellow_material[] = {1.0, 1.0, 0.0, 1.0}; 
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, yellow_material); 
     
     // Gambar solid torus
-    glutSolidTorus(0.2, 1.5, 50, 50);
+    glutSolidTorus(0.2, 1.5, 50, 50); 
     
-    glPopMatrix();
-    glutSwapBuffers();
+    glPopMatrix(); // Mengembalikan matriks model ke kondisi sebelumnya
+    glutSwapBuffers(); // Menukar buffer untuk menggambar (double buffering)
 }
 
-void reshapeHehe(int w, int h) {
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0, (float)w/(float)h, 1.0, 100.0);
-    glMatrixMode(GL_MODELVIEW);
+void reshapeHehe(int w, int h) { // Fungsi untuk menangani event reshape 
+    glViewport(0, 0, w, h); // Mengatur viewport sesuai ukuran jendela
+    glMatrixMode(GL_PROJECTION); // Beralih ke matriks proyeksi 
+    glLoadIdentity(); // Memuat matriks identitas ke matriks proyeksi
+    gluPerspective(45.0, (float)w/(float)h, 1.0, 100.0); // Mengatur proyeksi perspektif 
+    glMatrixMode(GL_MODELVIEW); // Beralih ke matriks modelview
 }
 
-void keyboard(unsigned char key, int x, int y) {
+void keyboard(unsigned char key, int x, int y) { // Fungsi untuk menangani event keyboard
     switch(key) {
         // Translasi
-        case 'w': ty += 0.1f; break;
+        case 'w': ty += 0.1f; break; 
         case 's': ty -= 0.1f; break;
         case 'a': tx -= 0.1f; break;
         case 'd': tx += 0.1f; break;
@@ -121,6 +132,56 @@ void keyboard(unsigned char key, int x, int y) {
         
         case 27: exit(0); break;
     }
+    glutPostRedisplay(); // Meminta OpenGL untuk merender ulang tampilan
+}
+//------------------------------------------------------------------------------------------------------------------------//
+
+//---------------------------------------------------------Sautan---------------------------------------------------------//
+void keyboard2(unsigned char key, int x, int y) {
+    switch(key) {
+        // Translasi
+       case 'w': ty2 += 0.1f; break; // Menambah posisi objek pada sumbu Y (ke atas)
+       case 's': ty2 -= 0.1f; break; // Mengurangi posisi objek pada sumbu Y (ke bawah)
+       case 'a': tx2 -= 0.1f; break; // Mengurangi posisi objek pada sumbu X (ke kiri)
+       case 'd': tx2 += 0.1f; break; // Menambah posisi objek pada sumbu X (ke kanan)
+       case 'q': tz2 -= 0.1f; break; // Mengurangi posisi objek pada sumbu Z (menjauh)
+       case 'e': tz2 += 0.1f; break; // Menambah posisi objek pada sumbu Z (mendekat)
+
+        
+        // Rotasi
+        case 'i': rx2 += 5.0f; break; // Menambah rotasi pada sumbu X (memutar ke depan)
+        case 'k': rx2 -= 5.0f; break; // Mengurangi rotasi pada sumbu X (memutar ke belakang)
+        case 'j': ry2 -= 5.0f; break; // Mengurangi rotasi pada sumbu Y (memutar ke kiri)
+        case 'l': ry2 += 5.0f; break; // Menambah rotasi pada sumbu Y (memutar ke kanan)
+        case 'u': rz2 -= 5.0f; break; // Mengurangi rotasi pada sumbu Z (memutar ke arah negatif Z)
+        case 'o': rz2 += 5.0f; break; // Menambah rotasi pada sumbu Z (memutar ke arah positif Z)
+
+        
+        // Skala
+        case '+': sx2 += 0.1f; sy2 += 0.1f; sz2 += 0.1f; break; // Menambah skala objek pada semua sumbu (memperbesar)
+        case '-': sx2 -= 0.1f; sy2 -= 0.1f; sz2 -= 0.1f; break; // Mengurangi skala objek pada semua sumbu (memperkecil)
+
+        
+        // Toggle sumbu
+        case 'h': showAxis2 = !showAxis2; break; // Mengaktifkan/mematikan visualisasi sumbu koordinat
+
+        
+        case 27: exit(0); break; // Menutup program saat tombol ESC (kode ASCII 27) ditekan
+
+    }
+    glutPostRedisplay(); // Meminta OpenGL untuk merender ulang tampilan
+
+}
+//------------------------------------------------------------------------------------------------------------------------//
+
+//---------------------------------------------------------Wilyandi-------------------------------------------------------//
+void keyboard3(unsigned char key, int x, int y) {
+    switch(key) {
+        // Toggle sumbu
+        case 'h': showAxis3 = !showAxis3; break; // Mengaktifkan/mematikan visualisasi sumbu koordinat
+        
+        case 27: exit(0); break; // Menutup program saat tombol ESC (kode ASCII 27) ditekan
+    }
     glutPostRedisplay();
 }
 
@@ -138,6 +199,7 @@ void reshapeBambu(int w, int h) {
 }
 
 void drawAxesBambu() {
+    if (!showAxis3) return;
     glLineWidth(2.0f);
     glBegin(GL_LINES);
 
@@ -224,15 +286,20 @@ void displayBambu() {
 }
 
 void idleBambu() {
-    angle += speed;
-    if (angle > 360.0f) angle -= 360.0f;
+    if (isRotate) {
+        angle += speed;
+        if (angle > 360.0f) angle -= 360.0f;
+    }
     glutPostRedisplay();
 }
+//------------------------------------------------------------------------------------------------------------------------//
 
+//---------------------------------------------------------Sautan---------------------------------------------------------//
 void createObject() {
-    GLUquadric* object = gluNewQuadric();
-    gluQuadricTexture(object, GL_TRUE);
-    gluQuadricNormals(object, GLU_SMOOTH);
+    GLUquadric* object = gluNewQuadric(); // Membuat objek kuadrik OpenGL untuk tekstur
+    gluQuadricTexture(object, GL_TRUE); // Mengaktifkan tekstur pada objek kuadrik
+    gluQuadricNormals(object, GLU_SMOOTH); // Menambahkan normal yang mulus untuk pencahayaan
+
     
     float panjang = 3.0f;  // Sesuaikan dengan ukuran yang diinginkan
     float lebar = 2.0f;    // Sesuaikan dengan ukuran yang diinginkan
@@ -271,7 +338,7 @@ void createObject() {
     glTexCoord2f(0.0f, 0.0f); glVertex3f(panjang, -tinggi, lebar);
     
     // Sisi kiri
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(-panjang, -tinggi, -lebar);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(-panjang, -tinggi, -lebar); 
     glTexCoord2f(1.0f, 0.0f); glVertex3f(-panjang, -tinggi, lebar);
     glTexCoord2f(1.0f, 1.0f); glVertex3f(-panjang, tinggi, lebar);
     glTexCoord2f(0.0f, 1.0f); glVertex3f(-panjang, tinggi, -lebar);
@@ -279,20 +346,24 @@ void createObject() {
 }
 
 void displayKonnyaku(){
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glPushMatrix();
-    glRotatef(0,0,0,0);
-    
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Membersihkan buffer warna dan kedalaman
+    glPushMatrix(); // Menyimpan matriks model saat ini ke dalam tumpukan
+    glTranslatef(tx2, ty2, tz2); // Melakukan translasi objek berdasarkan nilai variabel
+    glRotatef(rx2, 1.0, 0.0, 0.0); // Rotasi pada sumbu X
+    glRotatef(ry2, 0.0, 1.0, 0.0); // Rotasi pada sumbu Y
+    glRotatef(rz2, 0.0, 0.0, 1.0); // Rotasi pada sumbu Z
+    glScalef(sx2, sy2, sz2); // Skala objek sesuai nilai variabel
+
  
     //BIND TExture ke Object di bawahnya, dengan ID yang sudah di simpan 
     //tadi
-    glBindTexture( GL_TEXTURE_2D, texture_Earth_ID);
-    createObject();
+    glBindTexture(GL_TEXTURE_2D, texture_Earth_ID); // Mengaktifkan tekstur pada objek
+    createObject(); // Memanggil fungsi untuk menggambar objek
  
  
-    glPopMatrix();
-    glutSwapBuffers();
-    glutPostRedisplay();
+    glPopMatrix(); // Mengembalikan matriks model ke kondisi sebelumnya
+    glutSwapBuffers(); // Menukar buffer untuk menggambar (double buffering)
+    glutPostRedisplay(); // Meminta OpenGL untuk merender ulang
 }
 
     GLuint textureID = 0;
@@ -305,21 +376,21 @@ int loadTexture(const char* path) {
     void* imgData;
     int imgWidth;
     int imgHeight;
-    FREE_IMAGE_FORMAT format = FreeImage_GetFIFFromFilename(path);
+    FREE_IMAGE_FORMAT format = FreeImage_GetFIFFromFilename(path); // Mendapatkan format file gambar
     if (format == FIF_UNKNOWN) {
     printf("Unknown file type for texture image file %s\n", path);
     return -1;
  }
-    FIBITMAP* bitmap = FreeImage_Load(format, path, 0);
+    FIBITMAP* bitmap = FreeImage_Load(format, path, 0); // Memuat gambar
     if (!bitmap) {
     printf("Failed to load image %s\n", path);
     return -1;
  }
-    FIBITMAP* bitmap2 = FreeImage_ConvertTo24Bits(bitmap);
+    FIBITMAP* bitmap2 = FreeImage_ConvertTo24Bits(bitmap); // Mengonversi gambar ke 24-bit RGB
     FreeImage_Unload(bitmap);
-    imgData = FreeImage_GetBits(bitmap2);
-    imgWidth = FreeImage_GetWidth(bitmap2);
-    imgHeight = FreeImage_GetHeight(bitmap2);
+    imgData = FreeImage_GetBits(bitmap2); // Mendapatkan data piksel gambar
+    imgWidth = FreeImage_GetWidth(bitmap2); // Mendapatkan lebar gambar
+    imgHeight = FreeImage_GetHeight(bitmap2); // Mendapatkan tinggi gamba
     if (imgData) {
     printf("Texture image loaded from file %s, size %dx%d\n", path,
     imgWidth, imgHeight);
@@ -328,10 +399,10 @@ int loadTexture(const char* path) {
     format = GL_RGB;
     else
     format = GL_BGR;
-    glBindTexture( GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID); // Mengikat tekstur dengan ID tertentu
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0,
-    format,GL_UNSIGNED_BYTE, imgData);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    format, GL_UNSIGNED_BYTE, imgData); // Mengisi data tekstur
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // Mengatur filter tekstur
     textureID++;
     return textureID-1;
  }
@@ -342,96 +413,89 @@ int loadTexture(const char* path) {
 }
 
 void initProjection(){
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_POLYGON_SMOOTH);
+    glEnable(GL_DEPTH_TEST); // Mengaktifkan pengujian kedalaman untuk 3D
+    glEnable(GL_POLYGON_SMOOTH); // Menghaluskan tepi poligon
     glShadeModel(GL_SMOOTH);
     //untuk meaktifkan texture di Polygon
     glEnable(GL_TEXTURE_2D);
     //untuk Mengubah matrik menjadi texture Rendering di OpenGL
     glMatrixMode(GL_TEXTURE);
     //END
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(45.0,1800/900,1.0,100.0);
+    glMatrixMode(GL_PROJECTION); // Beralih ke matriks proyeksi
+    glLoadIdentity(); // Memuat identitas awal
+    gluPerspective(45.0, 1800/900, 1.0, 100.0); // Mengatur proyeksi perspektif
     gluLookAt(10.0, 10.0, 10.0,
             0.0, 0.0, 0.0,
             0.0, 1.0, 0.0);
-    glMatrixMode(GL_MODELVIEW);
-    texture_Earth_ID = loadTexture("textures/konnyaku2.png");
+    glMatrixMode(GL_MODELVIEW); // Beralih ke mode matriks model/view
+    texture_Earth_ID = loadTexture("textures/konnyaku2.png"); // Memuat tekstur dari file
     //texture_bulan_ID = loadTexture("textures/bulan.png");
 }
+//------------------------------------------------------------------------------------------------------------------------//
 
-void processMenu(int option)
-{
-    switch (option)
-    {
-    case 1:
-        is2DMode = false;
-        initBambu();
-        break;
-    case 2:
-        is2DMode = true;
-        break;
-    case 3:
-        isRotate = !isRotate;
-        break;
-    case 4:
-        exit(0);
+//---------------------------------------------------------Wilyandi-------------------------------------------------------//
+//fungsi untuk proses menu GUI
+void processMenu(int option) {
+    switch (option) {
+        case 1:
+            isRotate = true;	//Memutar baling baling
+            break;
+        case 2:
+            isRotate = false;	//stop putar
+            break;
+        case 3:
+            exit(0);	//keluar dri program
+            break;
     }
     glutPostRedisplay();
 }
-
-void createMenu()
-{
-    glutCreateMenu(processMenu);
-    glutAddMenuEntry("Baling-baling Bambu", 1);
-    glutAddMenuEntry("Object 2D", 2);
-    glutAddMenuEntry("Berhenti Bergerak", 3);
-    glutAddMenuEntry("Keluar", 4);
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
+//Buat menu klik kanan
+void createMenu() {
+    glutCreateMenu(processMenu);	//Hubungkan menu dengan fungsi processMenu
+    glutAddMenuEntry("Putar", 1);	//Tambah opsi "Putar"
+    glutAddMenuEntry("Berhenti", 2);	//Tambah opsi "Berhenti"
+    glutAddMenuEntry("Keluar", 3);	//Tambah opsi "Keluar"
+    glutAttachMenu(GLUT_RIGHT_BUTTON); //Tampilkan menu saat klik kanan
 }
+//------------------------------------------------------------------------------------------------------------------------//
 
-void update(int value)
-{
-    if (!is2DMode)
-    {
-        if (isRotate)
-        {
-            angle += speed;
-            if (angle > 360.0f) angle -= 360.0f;
-        }
-        glutPostRedisplay();
-    }
-    glutTimerFunc(1000/60, update, 0);
-}
 
-int main(int argc, char** argv) {
-    glutInit(&argc, argv);
-    glewInit();
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 
-    // Create the second window (hehe.cpp)
-    glutInitWindowSize(800, 600);
-    int window1 = glutCreateWindow("Lingkaran Penembus Dinding");
-    initHehe();
-    glutDisplayFunc(displayHehe);
-    glutReshapeFunc(reshapeHehe);
-    glutKeyboardFunc(keyboard);
+int main(int argc, char** argv) { // Fungsi utama
+    glutInit(&argc, argv); // Menginisialisasi GLUT
+    glewInit(); // Menginisialisasi GLEW
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); // Mengatur mode tampilan GLUT 
 
-    // Create the second window (bambu.cpp)
-    glutInitWindowSize(800, 600);
+//---------------------------------------------------------Fathul---------------------------------------------------------//
+    glutInitWindowSize(400, 400); // Mengatur ukuran jendela
+    glutInitWindowPosition(1000, 200); // Mengatur posisi jendela  
+    int window1 = glutCreateWindow("Lingkaran Penembus Dinding"); // Membuat jendela dengan judul tertentu
+    initHehe(); // Memanggil fungsi inisialisasi
+    glutDisplayFunc(displayHehe); // Memanggil fungsi display
+    glutReshapeFunc(reshapeHehe); // Memanggil fungsi reshape
+    glutKeyboardFunc(keyboard); // Memanggil fungsi keyboard
+//------------------------------------------------------------------------------------------------------------------------//
+
+//---------------------------------------------------------Wilyandi-------------------------------------------------------//
+    glutInitWindowSize(400, 400);
+    glutInitWindowPosition(150, 200);
     int window2 = glutCreateWindow("Baling baling bambu");
     initBambu();
     glutDisplayFunc(displayBambu);
     glutReshapeFunc(reshapeBambu);
+    glutKeyboardFunc(keyboard3);
     glutIdleFunc(idleBambu);
     createMenu();
+//------------------------------------------------------------------------------------------------------------------------//
 
-    // Create the second window (hehe.cpp)
-    glutInitWindowSize(800, 600);
+//---------------------------------------------------------Sautan---------------------------------------------------------//
+    glutInitWindowSize(400, 400);
+    glutInitWindowPosition(575, 200);
     int window3 = glutCreateWindow("Konnyaku");
     initProjection();
     glutDisplayFunc(displayKonnyaku);
+    glutKeyboardFunc(keyboard2);
+//------------------------------------------------------------------------------------------------------------------------//
 
     glutMainLoop();
     return 0;
