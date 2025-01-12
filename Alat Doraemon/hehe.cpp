@@ -15,7 +15,6 @@ bool showAxis = true;                      // Toggle sumbu
 float tx2 = 0.0f, ty2 = 0.0f, tz2 = 0.0f;    // Translasi 
 float rx2 = 0.0f, ry2 = 0.0f, rz2 = 0.0f;    // Rotasi
 float sx2 = 1.0f, sy2 = 1.0f, sz2 = 1.0f;    // Skala
-bool showAxis2 = true;                      // Untuk menampilkan sumbu koordinat
 GLuint texture_Earth_ID;
 //------------------------------------------------------------------------------------------------------------------------//
 
@@ -161,10 +160,6 @@ void keyboard2(unsigned char key, int x, int y) {
         // Skala
         case '+': sx2 += 0.1f; sy2 += 0.1f; sz2 += 0.1f; break; // Menambah skala objek pada semua sumbu (memperbesar)
         case '-': sx2 -= 0.1f; sy2 -= 0.1f; sz2 -= 0.1f; break; // Mengurangi skala objek pada semua sumbu (memperkecil)
-
-        
-        // Toggle sumbu
-        case 'h': showAxis2 = !showAxis2; break; // Mengaktifkan/mematikan visualisasi sumbu koordinat
 
         
         case 27: exit(0); break; // Menutup program saat tombol ESC (kode ASCII 27) ditekan
