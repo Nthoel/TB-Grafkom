@@ -21,7 +21,6 @@ GLuint texture_Earth_ID;
 //---------------------------------------------------------Wilyandi-------------------------------------------------------//
 bool showAxis3 = true;     // Menentukan apakah sumbu koordinat akan ditampilkan
 bool isRotate = false;     // Menandakan apakah baling-baling sedang berputar
-bool is2DMode = false;     // Menentukan apakah mode tampilan adalah 2D
 float angle = 0.0f;        // sudut rotasi baling-baling
 float speed = 3.0f;        // Mengatur kecepatan rotasi baling-baling
 //------------------------------------------------------------------------------------------------------------------------//
@@ -40,12 +39,10 @@ void initHehe() { // Fungsi inisialisasi
     GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0}; 
     GLfloat light_ambient[] = {0.2, 0.2, 0.2, 1.0}; 
     GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
     
     glLightfv(GL_LIGHT0, GL_POSITION, light_position); 
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular); 
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse); 
 }
 
 void drawAxes() {
